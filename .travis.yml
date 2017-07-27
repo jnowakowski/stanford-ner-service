@@ -1,0 +1,36 @@
+language: generic
+install:
+  - true
+script:
+  - true
+after_success:
+  - zip -r stanford-ner-service *
+  - mkdir deploy
+  - mv stanford-ner-service.zip deploy/
+deploy:
+  - provider: s3
+    access_key_id: $AWS_ACCESS_KEY
+    secret_access_key: $AWS_SECRET_KEY
+    local_dir: deploy
+    skip_cleanup: true
+    bucket: nervous-efficient-rebel
+    region: eu-west-1
+    on: &2
+      branch: master
+  - provider: codedeploy
+    access_key_id: $AWS_ACCESS_KEY
+    secret_access_key: $AWS_SECRET_KEY
+    key: stanford-ner-service.zip
+    bundle_type: zip
+    bucket: nervous-efficient-rebel
+    application: stanford-ner-service-app
+    deployment_group: nervous-efficient-rebel-depgrp
+    region: eu-west-1
+    wait-until-deployed: true
+    on: *2
+
+branches:
+  except:
+    - /v\d+\.\d+\.\d+/
+notifications:
+  email: false

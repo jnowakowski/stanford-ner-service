@@ -1,0 +1,32 @@
+version: 0.0
+os: linux
+files:
+  - source: ./
+    destination: /home/ec2-user/ner/stanford-ner-service
+
+permissions:
+  - object: /home/ec2-user/ner/
+    pattern: "stanford-ner-service"
+    owner: ec2-user
+    group: ec2-user
+    mode: 775
+
+  - object: /home/ec2-user/ner/stanford-ner-service/
+    pattern: "**"
+    owner: ec2-user
+    group: ec2-user
+    mode: 775
+
+hooks:
+#  ApplicationStop:
+#    - location: systemctl stop ner.service
+#      timeout: 20
+#
+
+  AfterInstall:
+    - location: ./ner-install.sh
+      timeout: 900
+
+  ApplicationStart:
+    - location: systemctl start ner.service
+      timeout: 20
