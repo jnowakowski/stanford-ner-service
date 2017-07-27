@@ -1,0 +1,11 @@
+[Unit]
+Description=Stanford NER service
+
+[Service]
+ExecStart=/home/user/Documents/normalized-news/stanford-ner-service/ner-server.sh
+Restart=always
+Environment=PATH=/usr/bin:/usr/local/bin
+WorkingDirectory=/home/user/Documents/normalized-news/stanford-ner-service
+
+[Install]
+WantedBy=multi-user.target

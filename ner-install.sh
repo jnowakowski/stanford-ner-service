@@ -64,7 +64,7 @@ $executable -mx1000m -cp "$workingDirectory/$versionName/stanford-ner.jar:$worki
 EOF
 
 # Write service unit
-serviceUnitName="ner.service"
+serviceUnitName="stanford-ner.service"
 serviceUnit="$workingDirectory/$serviceUnitName"
 log "Writing service unit to $serviceUnit"
 cat << EOF > $serviceUnit
