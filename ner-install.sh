@@ -10,11 +10,11 @@ workingDirectory="$(pwd)"
 
 # Log to stderr
 function log() {
-    printf "$1\n" >&2
+    printf "ner-install|$1\n" >&2
 }
 
 if [[ $portNumber -eq "" ]]; then
-    log "ner-install|ERROR|\$STANFORD_NER_PORT not set"
+    log "ERROR: \$STANFORD_NER_PORT not set"
     exit 1
 fi
 
@@ -22,22 +22,25 @@ fi
 # If we dont already hav a zipfile, download
 test -f "$zipFile"
 if [ $? -eq 0 ]; then
-    log "Using existing NER zipfile $zipfile"
+    log "Using existing NER archive $zipfile"
 else
-    log "Fetching NER zipfile"
+    log "Fetching NER archive"
     wget "https://nlp.stanford.edu/software/$zipFile"
 fi
 # Always unzip from the archive
+log "Removing previous folder"
 rm -rf "$versionName"
+log "Unpacking archive"
 unzip "$zipFile"
 
 
 # Make sure we have Java 8
 # is default java version 8
+log "Looking for Java 8"
 executable="java8"
 java -version 2>&1 | awk '/version/{print $NF}' | grep '"1.8.'
 if [ $? -eq 0 ]; then
-    log "Default java is java8"
+    log "Default java points to java8"
     executable="java"
 else
     # or is java8 installed
@@ -45,7 +48,7 @@ else
     if [ $? -eq 0 ]; then
         log "java8 found"
     else
-        log "need java8"
+        log "Need to install java8"
         sudo yum install java-1.8.0-openjdk.x86_64 -y
     fi
 fi
@@ -78,12 +81,15 @@ WorkingDirectory=$workingDirectory
 WantedBy=multi-user.target
 EOF
 
-# Make executable 
+# Make executable
+log "Marking generated files as executable" 
 chmod a+x "$serverScript" "$serviceUnit"
 
 
 # Add service to system and enable
 # Do not need to start, will be started either by user or by post-install hook
+log "Installing NER service"
 cp "$serviceUnit" "/etc/systemd/system/"
+log "Enabling NER service"
 systemctl enable "$serviceUnitName"
 
