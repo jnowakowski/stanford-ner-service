@@ -24,7 +24,7 @@ deploy:
     bundle_type: zip
     bucket: nervous-efficient-rebel
     application: stanford-ner-service-app
-    deployment_group: nervous-efficient-rebel-depgrp
+    deployment_group: stanford-ner-service-depgrp
     region: eu-west-1
     wait-until-deployed: true
     on: *2
