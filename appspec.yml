@@ -24,7 +24,7 @@ hooks:
 #
 
   AfterInstall:
-    - location: cd /home/ec2-user/ner/stanford-ner-service/ && ./ner-install.sh
+    - location: ./ner-install.sh /home/ec2-user/ner/stanford-ner-service/
       timeout: 900
 
   ApplicationStart:
