@@ -83,7 +83,6 @@ start() {
         echo -n "Starting stanford-ner: "
         touch /var/lock/subsys/stanford-ner
         daemon $serverScript
-        echo \$?
         return \$?
 }
 
