@@ -24,9 +24,9 @@ hooks:
 #
 
   AfterInstall:
-    - location: /ner-install.sh /home/ec2-user/ner/stanford-ner-service/
+    - location: deploy-hooks/after-install.sh
       timeout: 900
 
   ApplicationStart:
-    - location: /etc/init.d/stanford-nerd start
+    - location: deploy-hooks/application-start.sh
       timeout: 20
