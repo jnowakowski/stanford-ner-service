@@ -13,7 +13,7 @@ function log() {
     printf "ner-install|$1\n" >&2
 }
 
-if [[ $portNumber -eq "" ]]; then
+if [ $portNumber -eq "" ]; then
     log "ERROR: \$STANFORD_NER_PORT not set"
     exit 1
 fi
@@ -64,21 +64,56 @@ $executable -mx1000m -cp "$workingDirectory/$versionName/stanford-ner.jar:$worki
 EOF
 
 # Write service unit
-serviceUnitName="stanford-ner.service"
+serviceUnitName="stanford-nerd"
 serviceUnit="$workingDirectory/$serviceUnitName"
 log "Writing service unit to $serviceUnit"
 cat << EOF > $serviceUnit
-[Unit]
-Description=Stanford NER service
+#!/bin/bash
+#
+# /etc/init.d/stanford-ner
+#
+# chkconfig: 235 20 80
+# description: Stanford NER HTTP service.
+#
 
-[Service]
-ExecStart=$serverScript
-Restart=always
-Environment=PATH=/usr/bin:/usr/local/bin
-WorkingDirectory=$workingDirectory
+# Source function library.
+. /etc/init.d/functions
 
-[Install]
-WantedBy=multi-user.target
+start() {
+        echo -n "Starting stanford-ner: "
+        touch /var/lock/subsys/stanford-ner
+        daemon $serverScript
+        echo \$?
+        return \$?
+}
+
+stop() {
+        echo -n "Shutting down stanford-ner: "
+        rm -f /var/lock/subsys/stanford-ner
+        killproc $serverScript
+        return \$?
+}
+
+case "\$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    restart)
+        stop
+        start
+        ;;
+    condrestart)
+        [ -f /var/lock/subsys/<service> ] && restart || :
+        ;;
+    *)
+        echo "Usage: stanford-ner {start|stop|restart|condrestart}"
+        exit 1
+        ;;
+esac
+exit \$?
 EOF
 
 # Make executable
@@ -87,9 +122,10 @@ chmod a+x "$serverScript" "$serviceUnit"
 
 
 # Add service to system and enable
-# Do not need to start, will be started either by user or by post-install hook
+# Do not need to start, will be started either by user, restart or post-install hook
 log "Installing NER service"
-cp "$serviceUnit" "/etc/systemd/system/"
-log "Enabling NER service"
-systemctl enable "$serviceUnitName"
+cp "$serviceUnit" "/etc/init.d/"
 
+log "Enabling NER service"
+chkconfig --add "$serviceUnitName" 
+chkconfig --level 235 "$serviceUnitName" on 

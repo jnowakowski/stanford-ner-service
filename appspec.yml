@@ -19,7 +19,7 @@ permissions:
 
 hooks:
 #  ApplicationStop:
-#    - location: systemctl stop ner.service
+#    - location: /etc/init.d/stanford-nerd stop
 #      timeout: 20
 #
 
@@ -28,5 +28,5 @@ hooks:
       timeout: 900
 
   ApplicationStart:
-    - location: systemctl start ner.service
+    - location: /etc/init.d/stanford-nerd start
       timeout: 20
