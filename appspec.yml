@@ -24,11 +24,11 @@ hooks:
 #
 
   BeforeInstall:
-    - location: . /etc/profile.d/env.sh
+    - location: /etc/profile.d/env.sh
       timeout: 10
 
   AfterInstall:
-    - location: ./ner-install.sh /home/ec2-user/ner/stanford-ner-service/
+    - location: /ner-install.sh /home/ec2-user/ner/stanford-ner-service/
       timeout: 900
 
   ApplicationStart:
