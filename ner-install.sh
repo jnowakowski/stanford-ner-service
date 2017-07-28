@@ -11,6 +11,16 @@ function log() {
     printf "ner-install|$1\n" >&2
 }
 
+# Hack for AWS EC2 not supporting environment variables properly
+# Load a known file containing 'export VAR=VALUE' lines
+exportEnvScript="/etc/profile.d/env.sh"
+if [ -f "$exportEnvScript" ]; then
+   log "Loading environemnt from $exportEnvScript"
+   . "$exportEnvScript"
+else
+   log "Environment script $exportEnvScript not found, continuing"
+fi
+
 # We need a port number to write the correct service
 log "Checking environment variables"
 portNumber=${STANFORD_NER_PORT:?}
