@@ -112,7 +112,7 @@ cat << EOF > $serviceUnit
 start() {
         echo -n "Starting $serviceUnitName: "
         touch /var/lock/subsys/$serviceUnitName
-        daemon $serverScript
+        daemon $serverScript &
         return \$?
 }
 
