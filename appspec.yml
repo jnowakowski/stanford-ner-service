@@ -18,10 +18,9 @@ permissions:
     mode: 775
 
 hooks:
-#  ApplicationStop:
-#    - location: /etc/init.d/stanford-nerd stop
-#      timeout: 20
-#
+  ApplicationStop:
+    - location: deploy-hooks/application-stop.sh
+      timeout: 20
 
   AfterInstall:
     - location: deploy-hooks/after-install.sh
@@ -29,4 +28,8 @@ hooks:
 
   ApplicationStart:
     - location: deploy-hooks/application-start.sh
+      timeout: 20
+
+  ValidateService:
+    - location: deploy-hooks/validate-service.sh
       timeout: 20
