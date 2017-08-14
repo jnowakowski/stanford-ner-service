@@ -94,6 +94,7 @@ EOF
 # Write service unit
 serviceUnitName="stanford-nerd"
 serviceUnit="$workingDirectory/$serviceUnitName"
+pidfile="/var/run/$serviceUnitName.pid"
 log "Writing service unit to $serviceUnit"
 cat << EOF > $serviceUnit
 #!/bin/bash
@@ -109,18 +110,27 @@ cat << EOF > $serviceUnit
 # Source function library.
 . /etc/init.d/functions
 
+[ -x $serverScript ] || exit 0
+
 start() {
-        echo -n "Starting $serviceUnitName: "
-        touch /var/lock/subsys/$serviceUnitName
-        daemon $serverScript &
-        return \$?
+    echo -n "Starting $serviceUnitName"
+    if [ -e $pidfile ]; then
+       echo -n "$serviceUnitName already running!"
+    else
+       nohup $serverScript &
+       echo \$! > $pidfile
+    fi
 }
 
 stop() {
-        echo -n "Shutting down $serviceUnitName: "
-        rm -f /var/lock/subsys/$serviceUnitName
-        killproc $serverScript
-        return \$?
+    echo -n "Stopping $serviceUnitName"
+    if [ -e $pidfile ]; then
+        kill \`cat $pidfile\`
+        rm -f $pidfile
+    else
+       echo -n "$serviceUnitName is not running!"
+    fi
+
 }
 
 case "\$1" in
@@ -134,15 +144,12 @@ case "\$1" in
         stop
         start
         ;;
-    condrestart)
-        [ -f /var/lock/subsys/$serviceUnitName ] && restart || :
-        ;;
     *)
-        echo "Usage: $serviceUnitName {start|stop|restart|condrestart}"
+        echo "Usage: $serviceUnitName {start|stop|restart}"
         exit 1
         ;;
 esac
-exit \$?
+exit 0
 EOF
 
 # Make executable
