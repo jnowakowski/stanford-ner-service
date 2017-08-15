@@ -17,6 +17,7 @@ deploy:
     region: eu-west-1
     on: &2
       branch: master
+      tags: true
   - provider: codedeploy
     access_key_id: $AWS_ACCESS_KEY
     secret_access_key: $AWS_SECRET_KEY
@@ -29,8 +30,5 @@ deploy:
     wait-until-deployed: true
     on: *2
 
-branches:
-  except:
-    - /v\d+\.\d+\.\d+/
 notifications:
   email: false
