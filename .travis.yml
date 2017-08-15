@@ -3,7 +3,7 @@ install:
   - true
 script:
   - true
-after_success:
+before_deploy:
   - zip -r stanford-ner-service *
   - mkdir deploy
   - mv stanford-ner-service.zip deploy/

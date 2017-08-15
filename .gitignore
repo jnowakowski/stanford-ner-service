@@ -3,4 +3,4 @@ ner-server.sh
 ner.service
 stanford-ner-*
 stanford-nerd
-
+nohup.out
