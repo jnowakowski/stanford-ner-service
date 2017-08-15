@@ -113,24 +113,33 @@ cat << EOF > $serviceUnit
 [ -x $serverScript ] || exit 0
 
 start() {
-    echo -n "Starting $serviceUnitName"
+    echo "Starting $serviceUnitName"
     if [ -e $pidfile ]; then
-       echo -n "$serviceUnitName already running!"
+        echo "$serviceUnitName is already running"
     else
-       nohup $serverScript &
-       echo \$! > $pidfile
+        nohup $serverScript &
+        echo \$! > $pidfile
+        echo "$serviceUnitName started: \$(cat $pidfile)"
     fi
 }
 
 stop() {
-    echo -n "Stopping $serviceUnitName"
+    echo "Stopping $serviceUnitName"
     if [ -e $pidfile ]; then
         kill \`cat $pidfile\`
         rm -f $pidfile
+        echo "$serviceUnitName stopped"
     else
-       echo -n "$serviceUnitName is not running!"
+        echo "$serviceUnitName is not running"
     fi
+}
 
+status() {
+    if [ -e $pidfile ]; then
+        echo "$serviceUnitName is running"
+    else
+        echo "$serviceUnitName is not running"
+    fi
 }
 
 case "\$1" in
@@ -144,8 +153,15 @@ case "\$1" in
         stop
         start
         ;;
+    force-reload)
+        stop
+        start
+        ;;
+    status)
+        status
+        ;;
     *)
-        echo "Usage: $serviceUnitName {start|stop|restart}"
+        echo "Usage: $serviceUnitName {start|stop|restart|force-reload|status}"
         exit 1
         ;;
 esac
